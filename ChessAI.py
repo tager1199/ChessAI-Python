@@ -8,6 +8,13 @@
 # Copyright:   (c) Thomas 2020
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
+class ChessPieces:
+  def __init__(self, name, points, x, y):
+    self.name = name
+    self.points = points
+    self.pos = [x,y]
+
+
 scores = {
 "K": 99,
 "Q": 9,
