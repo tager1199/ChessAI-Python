@@ -34,6 +34,8 @@ scores = {
 }
 pieces = []
 rows = []
+blackThreat = False
+whiteThreat = True
 
 def createPieces():
     global pieces
@@ -72,14 +74,23 @@ def createPieces():
     pieces = [whiteP1,whiteP2,whiteP3,whiteP4,whiteP5,whiteP6,whiteP7,whiteP8,whiteN1,whiteN2,whiteB1,whiteB2,whiteR1,whiteR2,whiteQ,whiteK,blackP1,blackP2,blackP3,blackP4,blackP5,blackP6,blackP7,blackP8,blackN1,blackN2,blackB1,blackB2,blackR1,blackR2,blackQ,blackK]
 
 def validMoves(piece):
+    global blackThreat
+    global whiteThreat
+
     piece.validMoves = []
     moves = []
     whiteLocs = []
     blackLocs = []
+    wKing = []
+    bKing = []
     for x in pieces:
         if x.colour == "black":
+            if x.name == "King":
+                bKing = [x.x,x.y]
             blackLocs.append([x.x,x.y])
         else:
+            if x.name == "King":
+                wKing = [x.x,x.y]
             whiteLocs.append([x.x,x.y])
 
     if piece.name == "Pawn":
@@ -393,6 +404,10 @@ def validMoves(piece):
 
     deleteIndex = []
     for i in moves:
+        if i == wKing:
+            whiteThreat = True
+        elif i ==  bKing:
+            blackThreat = True
         if i[0] not in range(0, 8) or i[1] not in range(0, 8):
             deleteIndex.append(moves.index(i))
 
@@ -402,7 +417,7 @@ def validMoves(piece):
 
     piece.validMoves = moves
 
-def kingMoves():
+def kingMoves(colour):
     blackMoves = []
     whiteMoves = []
     moves = []
@@ -453,18 +468,39 @@ def playerTurn(colour):
 
 def aiTurn(colour):
     AllMoves = []
+    kingMoves()
     for i in pieces:
         if i.colour == colour:
             validMoves(i)
+
             if i.validMoves != []:
                 AllMoves.append([i,i.validMoves])
     pieceNo = random.randint(0,len(AllMoves)-1)
     moveNo = random.randint(0,len(AllMoves[pieceNo])-1)
     AllMoves[pieceNo][0].move(AllMoves[pieceNo][1][moveNo][0],AllMoves[pieceNo][1][moveNo][1])
 
+def checkWin(colour):
+    text = ""
+    if blackThreat == True:
+        print("Blacks King under threat")
+        if bKing.validMoves == []:
+            if colour == "black":
+                text = "Unfortunately you have lost to the AI"
+            else:
+                text = "Congratulations, you've won and beaten the AI"
+    if whiteThreat == True:
+        print("White King under threat")
+        if wKing.validMoves == []:
+            if colour == "black":
+                text = "Congratulations, you've won and beaten the AI"
+            else:
+                text = "Unfortunately you have lost to the AI"
 
 
 def main():
+    global blackThreat
+    global whiteThreat
+    Win = False
     createPieces()
     AIColour = "black"
     playerColour = input("What colour would you like to play? (Black or White)")
@@ -473,11 +509,22 @@ def main():
     if playerColour.lower() == "black":
         AIColour = "white"
     print("You are playing as", playerColour, "the AI is playing as", AIColour)
-    #while True:
-    drawBoard(playerColour)
-    aiTurn(AIColour)
-    drawBoard(playerColour)
-    playerTurn(playerColour)
+    while Win == False:
+        blackThreat = False
+        whiteThreat = False
+        if AIColour == "white":
+            aiTurn(AIColour)
+            drawBoard(playerColour)
+            Win = checkWin(playerColour)
+            playerTurn(playerColour)
+        else:
+            playerTurn(playerColour)
+            drawBoard(playerColour)
+            Win = checkWin(playerColour)
+            aiTurn(AIColour)
+        drawBoard(playerColour)
+        Win = checkWin(playerColour)
+
 
 if __name__ == '__main__':
     main()
