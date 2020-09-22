@@ -8,16 +8,20 @@
 # Copyright:   (c) Thomas 2020
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
-class ChessPieces:
-  def __init__(self, name, points, x, y, colour):
-    self.name = name
-    self.points = points
-    self.x = x
-    self.y = y
-    self.pos = [x,y]
-    self.colour = colour
-    self.validMoves = []
+import random
 
+class ChessPieces:
+    def __init__(self, name, points, x, y, colour):
+        self.name = name
+        self.points = points
+        self.x = x
+        self.y = y
+        self.colour = colour
+        self.validMoves = []
+
+    def move(self,x,y):
+        self.x = x
+        self.y = y
 
 
 scores = {
@@ -221,16 +225,16 @@ def validMoves(piece):
             if L == True:
                 if [piece.x-i,piece.y] in blackLocs:
                     if piece.colour == "black":
-                        U = False
+                        L = False
                     else:
                         moves.append([piece.x-i,piece.y])
-                        U = False
-                elif [[piece.x-i,piece.y]] in whiteLocs:
+                        L = False
+                elif [piece.x-i,piece.y] in whiteLocs:
                     if piece.colour == "black":
                         moves.append([piece.x-i,piece.y])
-                        U = False
+                        L = False
                     else:
-                        U = False
+                        L = False
                 else:
                     moves.append([piece.x-i,piece.y])
 
@@ -389,11 +393,9 @@ def validMoves(piece):
 
     deleteIndex = []
     for i in moves:
-        if i[0] not in range(0, 8):
+        if i[0] not in range(0, 8) or i[1] not in range(0, 8):
             deleteIndex.append(moves.index(i))
 
-        elif i[1] not in range(0, 8):
-            deleteIndex.append(moves.index(i))
 
     for i in sorted(deleteIndex, reverse = True):
         del moves[i]
@@ -423,36 +425,59 @@ def kingMoves():
     whiteKing.validMoves = moves
 
 
-def drawBoard():
+def drawBoard(colour):
     global rows
     rows = []
-    for x in range(8):
-        rows.append([' ',' ',' ',' ',' ',' ',' ',' '])
-    for i in pieces:
-        if i.name == "Knight":
-            rows[(7-i.y)][i.x] = 'N'
-        else:
-            rows[(7-i.y)][i.x] = i.name[0]
+    if colour == "white":
+        for x in range(8):
+            rows.append([' ',' ',' ',' ',' ',' ',' ',' '])
+        for i in pieces:
+            if i.name == "Knight":
+                rows[(7-i.y)][i.x] = 'N'
+            else:
+                rows[(7-i.y)][i.x] = i.name[0]
+    else:
+        for x in range(8):
+            rows.append([' ',' ',' ',' ',' ',' ',' ',' '])
+        for i in pieces:
+            if i.name == "Knight":
+                rows[(i.y)][i.x] = 'N'
+            else:
+                rows[(i.y)][i.x] = i.name[0]
     for x in rows:
         print(*x)
 
 
-def playerTurn():
+def playerTurn(colour):
     pass
 
-def aiTurn():
-    test = []
+def aiTurn(colour):
+    AllMoves = []
     for i in pieces:
-        validMoves(i)
-        print(i.validMoves)
+        if i.colour == colour:
+            validMoves(i)
+            if i.validMoves != []:
+                AllMoves.append([i,i.validMoves])
+    pieceNo = random.randint(0,len(AllMoves)-1)
+    moveNo = random.randint(0,len(AllMoves[pieceNo])-1)
+    AllMoves[pieceNo][0].move(AllMoves[pieceNo][1][moveNo][0],AllMoves[pieceNo][1][moveNo][1])
+
 
 
 def main():
     createPieces()
+    AIColour = "black"
+    playerColour = input("What colour would you like to play? (Black or White)")
+    while playerColour.lower() != "black" and playerColour.lower() != "white":
+        playerColour = input("Invalid colour please try again (Black or White)")
+    if playerColour.lower() == "black":
+        AIColour = "white"
+    print("You are playing as", playerColour, "the AI is playing as", AIColour)
     #while True:
-    drawBoard()
-    aiTurn()
-
+    drawBoard(playerColour)
+    aiTurn(AIColour)
+    drawBoard(playerColour)
+    playerTurn(playerColour)
 
 if __name__ == '__main__':
     main()
