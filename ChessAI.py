@@ -9,7 +9,7 @@
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
 import random
-
+import sys
 class ChessPieces:
     def __init__(self, name, points, x, y, colour):
         self.name = name
@@ -22,8 +22,16 @@ class ChessPieces:
     def move(self,x,y):
         self.x = x
         self.y = y
-
-
+        for i in pieces:
+            if i.colour != self.colour:
+                if i.x == x and i.y == y:
+                    print("Piece Taken")
+                    taken.append(i)
+                    pieces.remove(i)
+                    
+                    break
+        print("moved")
+        
 scores = {
 "K": 99,
 "Q": 9,
@@ -34,8 +42,9 @@ scores = {
 }
 pieces = []
 rows = []
+taken = []
 blackThreat = False
-whiteThreat = True
+whiteThreat = False
 
 def createPieces():
     global pieces
@@ -266,141 +275,85 @@ def validMoves(piece):
                     moves.append([piece.x,piece.y-i])
 
     elif piece.name == "Queen":
-        U = True
-        D = True
-        L = True
-        R = True
-        UL = True
-        UR = True
-        DL = True
-        DR = True
-        for i in range(8):
-            if U == True:
-                if [piece.x,piece.y+i] in blackLocs:
-                    if piece.colour == "black":
-                        U = False
-                    else:
-                        moves.append([piece.x,piece.y+i])
-                        U = False
-                elif [piece.x,piece.y+i] in whiteLocs:
-                    if piece.colour == "black":
-                        moves.append([piece.x,piece.y+i])
-                        U = False
-                    else:
-                        U = False
+        if piece.colour == "white":  
+            Locs = whiteLocs
+            notLocs = blackLocs        
+        else:
+            Locs = blackLocs
+            notLocs = whiteLocs
+        ULBlocked = False
+        URBlocked = False
+        DLBlocked = False
+        DRBlocked = False
+        UBlocked = False
+        LBlocked = False
+        RBlocked = False
+        DBlocked = False
+        for i in range(1,7):
+            if UBlocked == False:
+                if [piece.x, piece.y+i] in Locs:
+                    UBlocked = True
+                elif [piece.x, piece.y+i] in notLocs:
+                    moves.append([piece.x, piece.y+i])
+                    UBlocked = True
                 else:
-                    moves.append([piece.x,piece.y+i])
-
-            if D == True:
-                if [piece.x,piece.y-i] in blackLocs:
-                    if piece.colour == "black":
-                        D = False
-                    else:
-                        moves.append([piece.x,piece.y-i])
-                        D = False
-                elif [piece.x,piece.y-i] in whiteLocs:
-                    if piece.colour == "black":
-                        moves.append([piece.x,piece.y-i])
-                        D = False
-                    else:
-                        D = False
+                    moves.append([piece.x+i, piece.y])
+            if LBlocked == False:
+                if [piece.x-i, piece.y] in Locs:
+                    LBlocked = True
+                elif [piece.x-i, piece.y] in notLocs:
+                    moves.append([piece.x-i, piece.y])
+                    LBlocked = True
                 else:
-                    moves.append([piece.x,piece.y-i])
-
-            if L == True:
-                if [piece.x-i,piece.y] in blackLocs:
-                    if piece.colour == "black":
-                        L = False
-                    else:
-                        moves.append([piece.x-i,piece.y])
-                        L = False
-                elif [piece.x-i,piece.y] in whiteLocs:
-                    if piece.colour == "black":
-                        moves.append([piece.x-i,piece.y])
-                        L = False
-                    else:
-                        L = False
+                    moves.append([piece.x-i, piece.y])
+            if RBlocked == False:
+                if [piece.x+i, piece.y] in Locs:
+                    RBlocked = True
+                elif [piece.x+i, piece.y] in notLocs:
+                    moves.append([piece.x+i, piece.y])
+                    RBlocked = True
                 else:
-                    moves.append([piece.x-i,piece.y])
-
-            if R == True:
-                if [piece.x+i,piece.y] in blackLocs:
-                    if piece.colour == "black":
-                        R = False
-                    else:
-                        moves.append([piece.x+i,piece.y])
-                        R = False
-                elif [piece.x+i,piece.y] in whiteLocs:
-                    if piece.colour == "black":
-                        moves.append([piece.x+i,piece.y])
-                        R = False
-                    else:
-                        R = False
+                    moves.append([piece.x+i, piece.y])
+            if DBlocked == False:
+                if [piece.x, piece.y-i] in Locs:
+                    DBlocked = True
+                elif [piece.x, piece.y-i] in notLocs:
+                    moves.append([piece.x, piece.y-i])
+                    DBlocked = True
                 else:
-                    moves.append([piece.x+i,piece.y])
-
-            if UL == True:
-                if [piece.x - i,piece.y+i] in blackLocs:
-                    if piece.colour == "black":
-                        UL = False
-                    else:
-                        moves.append([piece.x - i,piece.y+i])
-                        UL = False
-                elif [piece.x - i,piece.y+i] in whiteLocs:
-                    if piece.colour == "black":
-                        moves.append([piece.x - i,piece.y+i])
-                        UL = False
-                    else:
-                        UL = False
+                    moves.append([piece.x, piece.y-i])  
+            if URBlocked == False:
+                if [piece.x+i, piece.y+i] in Locs:
+                    URBlocked = True
+                elif [piece.x+i, piece.y+i] in notLocs:
+                    moves.append([piece.x+i, piece.y+i])
+                    URBlocked = True
                 else:
-                    moves.append([piece.x - i,piece.y+i])
-            if UR == True:
-                if [piece.x + i,piece.y+i] in blackLocs:
-                    if piece.colour == "black":
-                        UR = False
-                    else:
-                        moves.append([piece.x + i,piece.y+i])
-                        UR = False
-                elif [piece.x + i,piece.y+i] in whiteLocs:
-                    if piece.colour == "black":
-                        moves.append([piece.x + i,piece.y+i])
-                        UR = False
-                    else:
-                        UR = False
+                    moves.append([piece.x+i, piece.y+i])
+            if ULBlocked == False:
+                if [piece.x+i, piece.y-i] in Locs:
+                    ULBlocked = True
+                elif [piece.x+i, piece.y-i] in notLocs:
+                    moves.append([piece.x+i, piece.y-i])
+                    ULBlocked = True
                 else:
-                    moves.append([piece.x + i,piece.y+i])
-
-            if DL == True:
-                if [piece.x - i, piece.y - i] in blackLocs:
-                    if piece.colour == "black":
-                        DL = False
-                    else:
-                        moves.append([piece.x - i, piece.y - i])
-                        DL = False
-                elif [piece.x - i, piece.y - i] in whiteLocs:
-                    if piece.colour == "black":
-                        moves.append([piece.x - i, piece.y - i])
-                        DL = False
-                    else:
-                        DL = False
+                    moves.append([piece.x+i, piece.y-i])
+            if DRBlocked == False:
+                if [piece.x-i, piece.y+i] in Locs:
+                    URBlocked = True
+                elif [piece.x-i, piece.y+i] in notLocs:
+                    moves.append([piece.x-i, piece.y+i])
+                    URBlocked = True
                 else:
-                    moves.append([piece.x - i, piece.y - i])
-
-            if DR == True:
-                if [piece.x + i, piece.y - i] in blackLocs:
-                    if piece.colour == "black":
-                        DR = False
-                    else:
-                        moves.append([piece.x + i, piece.y - i])
-                        DR = False
-                elif [piece.x + i, piece.y - i] in whiteLocs:
-                    if piece.colour == "black":
-                        moves.append([piece.x + i, piece.y - i])
-                        DR = False
-                    else:
-                        DR = False
+                    moves.append([piece.x-i, piece.y+i])
+            if DLBlocked == False:
+                if [piece.x-i, piece.y-i] in Locs:
+                    DLBlocked = True
+                elif [piece.x-i, piece.y-i] in notLocs:
+                    moves.append([piece.x-i, piece.y-i])
+                    DLBlocked = True
                 else:
-                    moves.append([piece.x + i, piece.y - i])
+                    moves.append([piece.x-i, piece.y-i])
 
     deleteIndex = []
     for i in moves:
@@ -420,40 +373,54 @@ def validMoves(piece):
 def kingMoves(colour):
     blackMoves = []
     whiteMoves = []
-    moves = []
+    Bmoves = []
+    Wmoves = []
     for i in pieces:
-        if piece.colour == "black" and piece.name != "King":
-            blackMoves.extend(piece.validMoves)
-        elif piece.colour == "white" and piece.name != "King":
-            whiteMoves.extend(piece.validMoves)
+        if i.colour == "black" and i.name != "King":
+            blackMoves.extend(i.validMoves)
+        elif i.colour == "white" and i.name != "King":
+            whiteMoves.extend(i.validMoves)
     blackKing = pieces[15]
     whiteKing = pieces[-1]
-    moves = [[blackKing.x + 1, blackKing.y + 1],[blackKing.x + 1, blackKing.y - 1],[blackKing.x + 1, blackKing.y],[blackKing.x - 1, blackKing.y + 1],[blackKing.x - 1, blackKing.y - 1],[blackKing.x - 1, blackKing.y],[blackKing.x, blackKing.y + 1],[blackKing.x, blackKing.y - 1]]
-    for i in moves:
-        if i in whiteMoves:
-            moves.remove(i)
-    blackKing.validMoves = moves
-    moves = [[whiteKing.x + 1, whiteKing.y + 1],[whiteKing.x + 1, whiteKing.y - 1],[whiteKing.x + 1, whiteKing.y],[whiteKing.x - 1, whiteKing.y + 1],[whiteKing.x - 1, whiteKing.y - 1],[whiteKing.x - 1, whiteKing.y],[whiteKing.x, whiteKing.y + 1],[whiteKing.x, whiteKing.y - 1]]
-    for i in moves:
-        if i in blackMoves:
-            moves.remove(i)
-    whiteKing.validMoves = moves
+    Bmoves = [[blackKing.x + 1, blackKing.y + 1],[blackKing.x + 1, blackKing.y - 1],[blackKing.x + 1, blackKing.y],[blackKing.x - 1, blackKing.y + 1],[blackKing.x - 1, blackKing.y - 1],[blackKing.x - 1, blackKing.y],[blackKing.x, blackKing.y + 1],[blackKing.x, blackKing.y - 1]]
 
+
+    Wmoves = [[whiteKing.x + 1, whiteKing.y + 1],[whiteKing.x + 1, whiteKing.y - 1],[whiteKing.x + 1, whiteKing.y],[whiteKing.x - 1, whiteKing.y + 1],[whiteKing.x - 1, whiteKing.y - 1],[whiteKing.x - 1, whiteKing.y],[whiteKing.x, whiteKing.y + 1],[whiteKing.x, whiteKing.y - 1]]
+    WmovesTemp = Wmoves
+    for i in Wmoves:
+        if i in blackMoves or Bmoves:
+            Wmoves.remove(i)
+    for i in Bmoves:
+        if i in whiteMoves or WmovesTemp:
+            Bmoves.remove(i)
+    whiteKing.validMoves = Wmoves
+    blackKing.validMoves = Bmoves
+
+def kingCheck(colour):
+    print("checking King Protection for", colour)
+    
+    
 
 def drawBoard(colour):
     global rows
     rows = []
     if colour == "white":
         for x in range(8):
-            rows.append([' ',' ',' ',' ',' ',' ',' ',' '])
+            rows.append(['  ','  ','  ','  ','  ','  ','  ','  '])
         for i in pieces:
-            if i.name == "Knight":
-                rows[(7-i.y)][i.x] = 'N'
+            if i.colour == 'white':
+                if i.name == "Knight":
+                    rows[(7-i.y)][i.x] = 'WN'
+                else:
+                    rows[(7-i.y)][i.x] = 'W'+i.name[0]
             else:
-                rows[(7-i.y)][i.x] = i.name[0]
+                if i.name == "Knight":
+                    rows[(7-i.y)][i.x] = 'BN'
+                else:
+                    rows[(7-i.y)][i.x] = 'B'+i.name[0]
     else:
         for x in range(8):
-            rows.append([' ',' ',' ',' ',' ',' ',' ',' '])
+            rows.append(['  ','  ','  ','  ','  ','  ','  ','  '])
         for i in pieces:
             if i.name == "Knight":
                 rows[(i.y)][i.x] = 'N'
@@ -461,22 +428,55 @@ def drawBoard(colour):
                 rows[(i.y)][i.x] = i.name[0]
     for x in rows:
         print(*x)
+    print("\n\n")
 
+def validCheck(piece,newLoc):
+    if piece.name != "King":
+        validMoves(piece)
+    else:
+        kingMoves(piece.colour)
+    print(piece.validMoves)
+    print(newLoc)
+    if newLoc in piece.validMoves:
+        return True
+    else:
+        return False
 
 def playerTurn(colour):
-    pass
+    move = input("Players turn, input move \n")
+    moved = False    
+    while (moved == False):
+        piece = False
+        for i in pieces:
+            if i.colour == colour:
+                if i.x == int(move[0]) and i.y == int(move[1]):
+                    piece = True
+                    if (colour == "white" and whiteThreat == True and i.name != "king"):
+                        print("You are in Check please protect your King.")    
+                        break
+                    elif (colour == "black" and blackThreat == True and i.name != "king"):
+                        print("You are in Check please protect your King.")    
+                        break           
+                    if validCheck(i,[int(move[2]),int(move[3])]):
+                        i.move(int(move[2]),int(move[3]))
+                        moved = True       
+                    else:
+                        print("Invalid move, please try again.")
+                        move = input("Players turn, input move \n")   
+        if piece == False:
+            print("You do not have a piece in that location please try again.")
+            move = input("Players turn, input move \n")    
 
 def aiTurn(colour):
     AllMoves = []
-    kingMoves()
+    kingMoves(colour)
     for i in pieces:
         if i.colour == colour:
             validMoves(i)
-
             if i.validMoves != []:
                 AllMoves.append([i,i.validMoves])
-    pieceNo = random.randint(0,len(AllMoves)-1)
-    moveNo = random.randint(0,len(AllMoves[pieceNo])-1)
+    pieceNo = random.randint(0,len(AllMoves)-1)    
+    moveNo = random.randint(0,len(AllMoves[pieceNo][1])-1)
     AllMoves[pieceNo][0].move(AllMoves[pieceNo][1][moveNo][0],AllMoves[pieceNo][1][moveNo][1])
 
 def checkWin(colour):
@@ -488,6 +488,7 @@ def checkWin(colour):
                 text = "Unfortunately you have lost to the AI"
             else:
                 text = "Congratulations, you've won and beaten the AI"
+            return True
     if whiteThreat == True:
         print("White King under threat")
         if wKing.validMoves == []:
@@ -495,7 +496,8 @@ def checkWin(colour):
                 text = "Congratulations, you've won and beaten the AI"
             else:
                 text = "Unfortunately you have lost to the AI"
-
+            return True
+    return False
 
 def main():
     global blackThreat
@@ -508,10 +510,15 @@ def main():
         playerColour = input("Invalid colour please try again (Black or White)")
     if playerColour.lower() == "black":
         AIColour = "white"
-    print("You are playing as", playerColour, "the AI is playing as", AIColour)
+    print("You are playing as", playerColour+",", "the AI is playing as", AIColour)
+    turn = 0
     while Win == False:
+        turn += 1
+        print("turn", turn)
         blackThreat = False
         whiteThreat = False
+        drawBoard(playerColour)
+        Win = checkWin(playerColour)
         if AIColour == "white":
             aiTurn(AIColour)
             drawBoard(playerColour)
@@ -522,9 +529,8 @@ def main():
             drawBoard(playerColour)
             Win = checkWin(playerColour)
             aiTurn(AIColour)
-        drawBoard(playerColour)
         Win = checkWin(playerColour)
-
+    wait = input()
 
 if __name__ == '__main__':
     main()
