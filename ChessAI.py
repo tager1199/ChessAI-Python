@@ -28,10 +28,10 @@ class ChessPieces:
                     print("Piece Taken")
                     taken.append(i)
                     pieces.remove(i)
-                    
+
                     break
         print("moved")
-        
+
 scores = {
 "K": 99,
 "Q": 9,
@@ -275,9 +275,9 @@ def validMoves(piece):
                     moves.append([piece.x,piece.y-i])
 
     elif piece.name == "Queen":
-        if piece.colour == "white":  
+        if piece.colour == "white":
             Locs = whiteLocs
-            notLocs = blackLocs        
+            notLocs = blackLocs
         else:
             Locs = blackLocs
             notLocs = whiteLocs
@@ -321,7 +321,7 @@ def validMoves(piece):
                     moves.append([piece.x, piece.y-i])
                     DBlocked = True
                 else:
-                    moves.append([piece.x, piece.y-i])  
+                    moves.append([piece.x, piece.y-i])
             if URBlocked == False:
                 if [piece.x+i, piece.y+i] in Locs:
                     URBlocked = True
@@ -398,8 +398,8 @@ def kingMoves(colour):
 
 def kingCheck(colour):
     print("checking King Protection for", colour)
-    
-    
+
+
 
 def drawBoard(colour):
     global rows
@@ -444,7 +444,7 @@ def validCheck(piece,newLoc):
 
 def playerTurn(colour):
     move = input("Players turn, input move \n")
-    moved = False    
+    moved = False
     while (moved == False):
         piece = False
         for i in pieces:
@@ -452,20 +452,20 @@ def playerTurn(colour):
                 if i.x == int(move[0]) and i.y == int(move[1]):
                     piece = True
                     if (colour == "white" and whiteThreat == True and i.name != "king"):
-                        print("You are in Check please protect your King.")    
+                        print("You are in Check please protect your King.")
                         break
                     elif (colour == "black" and blackThreat == True and i.name != "king"):
-                        print("You are in Check please protect your King.")    
-                        break           
+                        print("You are in Check please protect your King.")
+                        break
                     if validCheck(i,[int(move[2]),int(move[3])]):
                         i.move(int(move[2]),int(move[3]))
-                        moved = True       
+                        moved = True
                     else:
                         print("Invalid move, please try again.")
-                        move = input("Players turn, input move \n")   
+                        move = input("Players turn, input move \n")
         if piece == False:
             print("You do not have a piece in that location please try again.")
-            move = input("Players turn, input move \n")    
+            move = input("Players turn, input move \n")
 
 def aiTurn(colour):
     AllMoves = []
@@ -475,7 +475,7 @@ def aiTurn(colour):
             validMoves(i)
             if i.validMoves != []:
                 AllMoves.append([i,i.validMoves])
-    pieceNo = random.randint(0,len(AllMoves)-1)    
+    pieceNo = random.randint(0,len(AllMoves)-1)
     moveNo = random.randint(0,len(AllMoves[pieceNo][1])-1)
     AllMoves[pieceNo][0].move(AllMoves[pieceNo][1][moveNo][0],AllMoves[pieceNo][1][moveNo][1])
 
